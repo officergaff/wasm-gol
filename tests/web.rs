@@ -3,9 +3,11 @@
 #![cfg(target_arch = "wasm32")]
 
 extern crate wasm_bindgen_test;
+extern crate wasm_gol;
 use std::assert_eq;
 
 use wasm_bindgen_test::*;
+use wasm_gol::Universe;
 
 wasm_bindgen_test_configure!(run_in_browser);
 
@@ -13,9 +15,6 @@ wasm_bindgen_test_configure!(run_in_browser);
 fn pass() {
     assert_eq!(1 + 1, 2);
 }
-
-extern crate wasm_gol;
-use wasm_gol::Universe;
 
 #[cfg(test)]
 pub fn input_spaceship() -> Universe {

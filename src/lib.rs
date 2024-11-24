@@ -1,11 +1,18 @@
 mod utils;
 
-use core::fmt;
-use js_sys::Math;
 extern crate fixedbitset;
-use fixedbitset::FixedBitSet;
+extern crate web_sys;
 
+use core::fmt;
+use fixedbitset::FixedBitSet;
+use js_sys::Math;
 use wasm_bindgen::prelude::*;
+
+macro_rules! log {
+    ( $( $t:tt)* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    };
+}
 
 #[wasm_bindgen]
 extern "C" {
@@ -27,6 +34,7 @@ pub struct Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Self {
+        utils::set_panic_hook();
         let width = 64;
         let height = 64;
 
@@ -55,6 +63,11 @@ impl Universe {
     }
     pub fn cells(&self) -> *const usize {
         self.cells.as_slice().as_ptr()
+    }
+
+    pub fn toggle_cell(&mut self, row: u32, column: u32) {
+        let idx = self.get_index(row, column);
+        self.cells.set(idx, !self.cells[idx]);
     }
 
     pub fn set_width(&mut self, width: u32) {
@@ -95,16 +108,22 @@ impl Universe {
                 let idx = self.get_index(row, col);
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
-                next.set(
-                    idx,
-                    match (cell, live_neighbors) {
-                        (true, x) if x < 2 => false,
-                        (true, 2) | (true, 3) => true,
-                        (true, x) if x > 3 => false,
-                        (false, 3) => true,
-                        (otherwise, _) => otherwise,
-                    },
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                    row,
+                    col,
+                    cell,
+                    live_neighbors
                 );
+                let next_cell = match (cell, live_neighbors) {
+                    (true, x) if x < 2 => false,
+                    (true, 2) | (true, 3) => true,
+                    (true, x) if x > 3 => false,
+                    (false, 3) => true,
+                    (otherwise, _) => otherwise,
+                };
+                log!("    it becomes {:?}", next_cell);
+                next.set(idx, next_cell);
             }
         }
         self.cells = next;
