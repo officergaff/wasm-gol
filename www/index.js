@@ -169,7 +169,9 @@ let animationId = null;
 const renderLoop = () => {
   // debugger;
   fps.render();
-  universe.tick();
+  for (let i = 0; i < 9; i++) {
+    universe.tick();
+  }
   drawGrid();
   drawCells();
 
