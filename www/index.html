@@ -13,6 +13,10 @@
         align-items: center;
         justify-content: center;
       }
+      #fps {
+        white-space: pre;
+        font-family: monospace;
+      }
     </style>
     <meta charset="utf-8" />
     <title>Hello wasm-pack!</title>
@@ -23,6 +27,7 @@
       javascript in your browser.</noscript
     >
     <button id="play-pause">⏸</button>
+    <div id="fps"></div>
     <canvas id="game-of-life-canvas"></canvas>
     <script src="./bootstrap.js"></script>
   </body>
